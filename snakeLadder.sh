@@ -2,11 +2,12 @@
 
 readonly START=0
 currentPosition=$START
+value=0
 echo "Welcome to Snake And Ladder Game"
 rollDice()
 {
 	value=$(( 1 + $((RANDOM%6)) ))
-	echo "Dice Output: $value"
+	#echo "Dice Output: $value"
 }
 playerOptions()
 {
@@ -32,7 +33,22 @@ playerOptions()
 			echo "Option not available"
 			;;
 	esac
-	echo "Current Position of player: $currentPosition"
+	
+}
+winningGame()
+{
+	until [[ $currentPosition -gt 100 ]]
+	do
+		if (( $(( $currentPosition + $value )) > 100 ))
+		then
+			currentPosition=$currentPosition
+			break
+		else
+			playerOptions
+		fi
+		echo "Current Position of player: $currentPosition"
+		echo "---------------------"
+	done
 }
 
-playerOptions
+winningGame
