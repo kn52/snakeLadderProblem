@@ -7,7 +7,7 @@ echo "Welcome to Snake And Ladder Game"
 rollDice()
 {
 	value=$(( 1 + $((RANDOM%6)) ))
-	#echo "Dice Output: $value"
+	echo "Dice Output: $value"
 }
 playerOptions()
 {
@@ -39,7 +39,11 @@ winningGame()
 {
 	until [[ $currentPosition -gt 100 ]]
 	do
-		if (( $(( $currentPosition + $value )) > 100 ))
+		if (( $(($currentPosition + $value)) == 100 ))
+		then
+			currentPosition=100
+			echo "You Won..."
+		elif (( $(( $currentPosition + $value )) > 100 ))
 		then
 			currentPosition=$currentPosition
 			break
