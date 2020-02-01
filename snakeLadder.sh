@@ -15,7 +15,6 @@ playerOptions()
 {
 	local option=$(( $((RANDOM%3)) + 1 ))
 	echo "Option: $option"
-	rollDice
 	case $option in
 		1)
 			playerPosition[$roll]=$currentPosition
