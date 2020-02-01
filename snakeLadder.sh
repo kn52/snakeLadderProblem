@@ -53,6 +53,8 @@ winningGame()
 			currentPosition=100
 			playerPosition[$roll]=$currentPosition
 			echo "You Won..."
+			echo "Current Position of player: ${playerPosition[$roll]}"
+			echo "Total Rolls: $roll"
 			break
 		elif (( $(( $currentPosition + $value )) > 100 ))
 		then
@@ -65,4 +67,4 @@ winningGame()
 	done
 }
 
-winningGame
+	winningGame
