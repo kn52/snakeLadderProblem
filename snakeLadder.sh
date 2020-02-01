@@ -1,12 +1,14 @@
-#!/bin/bash
-
+#!/bin/bash -x 
+declare -A playerPosition
 readonly START=0
 currentPosition=$START
 value=0
+roll=0
 echo "Welcome to Snake And Ladder Game"
 rollDice()
 {
 	value=$(( 1 + $((RANDOM%6)) ))
+	((roll++))	
 	echo "Dice Output: $value"
 }
 playerOptions()
@@ -16,16 +18,19 @@ playerOptions()
 	rollDice
 	case $option in
 		1)
-			currentPosition=$currentPosition
+			playerPosition[$roll]=$currentPosition
 			;;
 		2)
 			currentPosition=$(( $currentPosition + $value ))
+			playerPosition[$roll]=$currentPosition
 			;;
 		3)	
 			currentPosition=$(( $currentPosition - $value))
+			playerPosition[$roll]=$currentPosition
 			if (( $currentPosition < 0 ))
 			then
 				currentPosition=$START
+				playerPosition[$roll]=$currentPosition
 			fi
 			;;
 		*)
@@ -37,20 +42,25 @@ playerOptions()
 }
 winningGame()
 {
+	
+	
 	until [[ $currentPosition -gt 100 ]]
 	do
+		currentPosition=${playerPosition[$roll]}
+		rollDice		
 		if (( $(($currentPosition + $value)) == 100 ))
 		then
 			currentPosition=100
+			playerPosition[$roll]=$currentPosition
 			echo "You Won..."
+			break
 		elif (( $(( $currentPosition + $value )) > 100 ))
 		then
-			currentPosition=$currentPosition
-			break
+			playerPosition[$roll]=${playerPosition[$roll]}
 		else
 			playerOptions
 		fi
-		echo "Current Position of player: $currentPosition"
+		echo "Current Position of player: ${playerPosition[$roll]}"
 		echo "---------------------"
 	done
 }
