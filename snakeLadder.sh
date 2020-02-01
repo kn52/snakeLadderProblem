@@ -1,61 +1,60 @@
 #!/bin/bash
 declare -A playerPosition
-readonly START=0
-currentPosition=$START
-player=1
-value=0
-roll=0
+readonly STARTING_POINT=0
+readonly END_POINT=100
+readonly NOPLAY=1
+readonly LADDER=2
+readonly SNAKE=3
+currentPlayerPosition=$STARTING_POINT
+playerTurn=1
+diceOutput=0
+rollingDiceCount=0
 echo "Welcome to Snake And Ladder Game"
 rollDice()
 {
-	value=$(( 1 + $((RANDOM%6)) ))
-	echo "Dice Output: $value"
+	diceOutput=$(( 1 + $((RANDOM%6)) ))
 }
 player()
 {
-	playerPosition[$roll,0]=$roll	
-	playerPosition[$roll,1]=$player
+	playerPosition[$rollingDiceCount,0]=$rollingDiceCount	
+	playerPosition[$rollingDiceCount,1]=$playerTurn
+	playerPosition[$rollingDiceCount,2]=$currentPlayerPosition
 			
 }
 changeTurn()
 {
-	local playerValue=$1
-	if (( $playerValue == 1))
+	local player=$1
+	if (( $player == 1))
 	then
-		player=2
+		playerTurn=2
 	else
-		player=1
+		playerTurn=1
 	fi
 }
 playerOptions()
 {
 	local option=$(( $((RANDOM%3)) + 1 ))
-	echo "Option: $option"
 	rollDice
-	((roll++))
+	((rollingDiceCount++))
 	case $option in
-		1)
+		$NOPLAY)
 			player
-			playerPosition[$roll,2]=$currentPosition
 			;;
-		2)
-			currentPosition=$(( $currentPosition + $value ))
+		$LADDER)
+			currentPlayerPosition=$(( $currentPlayerPosition + $diceOutput ))
 			player
-			playerPosition[$roll,2]=$currentPosition
 			;;
-		3)	
-			currentPosition=$(( $currentPosition - $value))
+		$SNAKE)	
+			currentPlayerPosition=$(( $currentPlayerPosition - $diceOutput))
 			player
-			playerPosition[$roll,2]=$currentPosition
-			if (( $currentPosition < 0 ))
+			if (( $currentPlayerPosition < 0 ))
 			then
-				currentPosition=$START
-				playerPosition[$roll,2]=$currentPosition
+				currentPlayerPosition=$STARTING_POINT
+				playerPosition[$rollingDiceCount,2]=$currentPlayerPosition
 			fi
 			;;
 		*)
-			echo "Option: $(( $((RANDOM%3)) + 1 ))"
-			echo "Option not available"
+			break
 			;;
 	esac
 	
@@ -64,28 +63,24 @@ winningGame()
 {
 	
 	
-	until [[ $currentPosition -gt 100 ]]
+	until [[ $currentPlayerPosition -gt $END_POINT ]]
 	do
-		currentPosition=${playerPosition[$roll,2]}
+		currentPlayerPosition=${playerPosition[$rollingDiceCount,2]}
 		rollDice		
-		if (( $(($currentPosition + $value)) == 100 ))
+		if (( $(($currentPlayerPosition + $diceOutput)) == $END_POINT ))
 		then
-			currentPosition=100
+			currentPlayerPosition=$END_POINT
 			player
-			playerPosition[$roll,2]=$currentPosition
-			echo "Player ${playerPosition[$roll,1]} Won..."
-			echo "Current Position of player: ${playerPosition[$roll,2]}"
-			echo "Total Rolls: $roll"
+			playerPosition[$rollingDiceCount,2]=$currentPlayerPosition
+			echo -e "Player $playerTurn won....\nNumber of times dice rolled: $rollingDiceCount"
 			break
-		elif (( $(( $currentPosition + $value )) > 100 ))
+		elif (( $(( $currentPlayerPosition + $diceOutput )) > $END_POINT ))
 		then
-			playerPosition[$roll,2]=${playerPosition[$roll,2]}
+			playerPosition[$rollingDiceCount,2]=${playerPosition[$rollingDiceCount,2]}
 		else
 			playerOptions
 		fi
-		echo "Current Position of player ${playerPosition[$roll,1]} : ${playerPosition[$roll,2]}"
-		changeTurn $player
-		echo "---------------------"
+		changeTurn $playerTurn
 	done
 }
 
